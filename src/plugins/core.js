@@ -1,6 +1,6 @@
 
 const COMMON_MATCH = /\$\{.*\}/g;
-const COMMON_SPLITTER = /\$\{|\(|\)|\:|, |,|\}/g;
+const COMMON_SPLITTER = /\$\{|\(|\)|\:|, |,|\|\||\s+|\}/g;
 const COMMON_SPLITTER_MIN = /\$|\}/g;
 const QUOTE_REGEX = /["']/g;
 
@@ -23,6 +23,8 @@ const processSplitMin = (context, value) => {
     return value;
   }
   
+  // split arguments, filter out empties, then run them
+  // against plugins. 
   const result = value.split(COMMON_SPLITTER_MIN)
   .filter((v) => v)
   .map((v) => {
@@ -32,8 +34,12 @@ const processSplitMin = (context, value) => {
     }
     return v;
   });
-  if (result && typeof result[0] !== 'string') {
-    return result[0];
+
+  const [first] = result || [];
+  // in case this was not a flat string replacement, for example
+  // a file() call, this will be an object, so we don't want to join
+  if (typeof first !== 'string') {
+    return first;
   }
   return result.join('');
 }

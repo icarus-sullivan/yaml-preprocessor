@@ -2,11 +2,13 @@
   "name": "yaml-preprocessor",
   "version": "0.0.1",
   "description": "A simple yaml preprocessor with pluggable methods, and internals",
-  "main": "dist/main.js",
+  "main": "lib/index.js",
   "scripts": {
-    "start": "yarn build ; node ./bin/libs.js --file serverless.yml --stage beta",
-    "build": "webpack"
+    "build": "babel src --out-dir lib"
   },
+  "bin": {
+    "yp": "./lib/bin.js"
+  }, 
   "keywords": [
     "yaml",
     "preprocessor",
@@ -19,6 +21,7 @@
   "author": "Chris Sullivan",
   "license": "MIT",
   "dependencies": {
+    "iter-object": "^1.0.0",
     "js-yaml": "^3.12.1",
     "node-args": "^2.1.8"
   },

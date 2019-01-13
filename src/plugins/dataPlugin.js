@@ -1,10 +1,10 @@
 import { search } from '../utls/common';
 
 export default {
-  identifier: 'opt',
+  identifier: 'data',
   resolve: (context, path, defaultValue) => {
-    const { options } = context;
+    const { data } = context;
 
-    return search(options, path) || defaultValue;
+    return search(data, path) || defaultValue;
   }
 };

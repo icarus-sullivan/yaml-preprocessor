@@ -1,60 +1,45 @@
-import args from 'node-args';
 import yaml from 'js-yaml';
-import fs from 'fs';
+import { iterReplace } from 'iter-object';
 import filePlugin from './plugins/filePlugin';
-import optionsPlugin from './plugins/optionsPlugin';
+import dataPlugin from './plugins/dataPlugin';
 import selfPlugin from './plugins/selfPlugin';
+import { lowerPlugin, upperPlugin } from './plugins/stringPlugins';
+import timePlugin from './plugins/timePlugin';
 import pluginProcessor from './plugins/core';
 
-const defaultPlugins = [
-  optionsPlugin,
+const plugins = [
+  timePlugin,
+  lowerPlugin,
+  upperPlugin,
+  dataPlugin,
   filePlugin,
   selfPlugin
 ];
 
-const iterobj = (obj, callback) => {
-  if (typeof obj !== 'object' && !Array.isArray(obj)) {
-    return obj;
-  }
-  for (const [key, value] of Object.entries(obj)) {
-    const repl = callback(key, value);
-    obj[key] = iterobj(repl, callback);
-  }
-  return obj;
+export const registerPlugin = (plugin) => {
+  plugins.push(plugin);
 };
 
-const processObj = (context) => iterobj(context.src, (key, value) => pluginProcessor(context, value) || value);
+const processObj = (context) => iterReplace(context.src, (key, value) => pluginProcessor(context, value) || value);
 
-const process = (configuration) => {
-  const { plugins = [] } = configuration || {};
-  const finalPlugins = defaultPlugins.concat(plugins);
-  const options = args;
-  const filename = args.file;
-
-  // get yaml
-  const y = fs.readFileSync(filename, 'utf8');
+export const process = (input, data) => {
 
   // load as object
-  const doc = yaml.safeLoad(y);
+  const doc = yaml.safeLoad(input);
 
   // let chained items like files be resolved
   const firstPass = processObj({
     src: doc,
-    options,
-    plugins: finalPlugins,
+    plugins,
+    data,
   });
 
   // let non-completed files be interpolated
   const secondPass = processObj({
     src: firstPass,
-    options,
-    plugins: finalPlugins,
+    plugins,
+    data,
   });
 
   return yaml.safeDump(secondPass);
 };
-
-// export default process();
-console.time('process');
-console.log(process());
-console.timeEnd('process');

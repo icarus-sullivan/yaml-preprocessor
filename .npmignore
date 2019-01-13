@@ -1,0 +1,8 @@
+# node specific
+**/node_modules
+
+# hidden artificats
+.**
+
+# dist
+dist
