@@ -4,5 +4,8 @@
 # hidden artificats
 .**
 
-# dist
-dist
+# library
+lib
+
+# examples
+example

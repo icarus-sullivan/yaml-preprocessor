@@ -1,5 +1,5 @@
 # node specific
 **/node_modules
 
-# dist
-dist
+# built library
+lib
